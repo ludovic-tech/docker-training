@@ -1,0 +1,46 @@
+version: '2.4'
+
+services:
+  web0:
+    image: dockercloud/hello-world
+    container_name: web0
+    hostname: web0
+    volumes:
+      - ./web0/:/www/
+    networks:
+      - backend
+  web1:
+    image: dockercloud/hello-world
+    container_name: web1
+    hostname: web1
+    volumes:
+      - ./web1/:/www/
+    networks:
+      - backend
+  web2:
+    image: dockercloud/hello-world
+    container_name: web2
+    hostname: web2
+    volumes:
+      - ./web2:/www/
+    networks:
+      - backend
+  haweb:
+    build: ./
+    #image: haweb:latest
+    container_name: haweb
+    ports:
+      - 80:80
+    depends_on:
+      - web0
+      - web1
+      - web2
+    networks:
+      - backend
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:12201"
+        tag: "haweb"
+networks:
+   backend:

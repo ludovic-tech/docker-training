@@ -1,0 +1,31 @@
+version: '3'
+services:
+  db:
+    image: mariadb:latest
+    volumes:
+    - type: volume
+      source: nfs_vol_db
+      target: /var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    container_name: db
+  app:
+    image: tutum/apache-php
+    volumes:
+    - type: volume
+      source: nfs_vol_www
+      target: /var/www/html
+    ports:
+      - "8088:80"    
+    container_name: web
+volumes:
+  nfs_vol_www:
+   driver_opts:
+     type: "nfs"
+     o: "addr=10.0.0.230,rw"
+     device: ":/var/lib/nfs/docker/ludo-www-data"
+  nfs_vol_db:
+   driver_opts:
+     type: "nfs"
+     o: "addr=10.0.0.230,rw"
+     device: ":/var/lib/nfs/docker/ludo-db-data"
