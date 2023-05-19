@@ -1,0 +1,39 @@
+version: '3'
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5432:5432"
+  app:
+    build:
+      context: .
+      args:
+        NODE_VERSION: ${NODE_VERSION}
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"    
+    env_file: .env
+    environment:
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: npm run start
+volumes:
+  db-data:
+
