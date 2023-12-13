@@ -10,7 +10,7 @@ services:
       MARIADB_ROOT_PASSWORD: root
     container_name: db
   app:
-    image: tutum/apache-php
+    image: quenec/apache-php
     volumes:
     - type: volume
       source: nfs_vol_www
